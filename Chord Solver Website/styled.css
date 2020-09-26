@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1{ 
+    font-family: 'Anton', sans-serif;
+    font-family: 'Fira Sans Condensed', sans-serif;
+    font-size: 250%;
+    font-weight: 350;
+    color: #C33C23;
+}
+
+#big { 
+    font-family: 'Anton', sans-serif;
+    font-family: 'Fira Sans Condensed', sans-serif;
+    font-size: 400%;
+    font-weight: 350;
+    color: #C33C23;
+}
+
+body {
+    background-image: url( http://api.thumbr.it/whitenoise-361x370.png?background=e6e5ddff&noise=626262&density=2&opacity=15);
+    font-family: 'Anton', sans-serif;
+    font-family: 'Fira Sans Condensed', sans-serif;
+    height: 100%;
+    }
+
+main {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 400px 1fr 150px;
+    grid-template-rows: 100px 1fr 65px;
+    grid-template-areas: 
+    "Heading form login"
+    ". result ."
+    "footer footer footer"
+    ;
+
+
+}
+
+
+.heading {
+    position: relative;
+    grid-area: heading;
+    min-width: 50px;
+    justify-self: center;
+    align-self: center;
+}
+
+
+#head {
+    margin: 10px 25px;
+}
+
+.form {
+    grid-area: form;
+    align-self: center;
+}
+
+#answer {
+    font-size: 70px;
+}
+
+.submit {
+    background-color: #C33C23;
+    color: white;
+    border: none;
+    height: 35px;
+    border-radius: 30%;
+    cursor: pointer;
+}
+
+.search {
+    grid-area: search;
+    position: relative;
+    margin-bottom: 500px;
+    padding-left: 350px;
+    padding-right: 350px;
+    width: 100%;
+}
+
+#search {
+    padding-left: 5px;
+    width: 95%;
+    height: 35px;
+    border: none;
+    border-radius: 5px;
+}
+
+.submit {
+    width: 40px;
+    height: 35px;
+}
+
+.login {
+    grid-area: login;
+    background-color: #C33C23;
+    border-radius: 5%;
+}
+
+.login h1 {
+    text-align: center;
+    position: relative;
+    padding-top: 20px;
+    font-size: 350%;
+    font-weight: 700;
+    bottom: 4px;
+}
+
+.login h1:hover {
+    color: white;
+    transition: color 1.5s;
+}
+
+.result {
+    grid-area: result;
+    position: relative;
+    width: 100%;
+}
+
+
+th {
+    text-align: left;
+}
+.tablenotes {
+    width: 60%;
+    margin: 25px 0;
+    min-width: 400px;
+}
+
+.tablenotes h2 {
+    font-size: 450%;
+    font-weight: 350;
+    color:  rgb(54, 151, 230);
+    padding: 35px;
+}
+
+.desc {
+    font-size: 55px;
+}
+
+.footer {
+    grid-area: footer;
+    background-color: rgb(81, 165, 165);
+    padding: 0;
+    height: 100%;
+    margin-bottom: 0px;
+}
+
+.links {
+    display: grid;
+    height: 100%;
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas: "About Spotify Apple-music IG";
+    
+}
+
+a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+#about {
+    grid-area: About;
+    text-align: center;
+
+}
+
+#Spotify {
+    grid-area: Spotify;
+    text-align: center;
+
+}
+
+#IG {
+    grid-area: IG;
+    text-align: center;
+}
+
+#Apple-music {
+    grid-area: Apple-music;
+    text-align: center;
+}
+
+#copy {
+    position: relative;
+    float: right;
+    margin-bottom: 0px;
+    bottom: 9px;
+}
+
+.links a:hover {
+    color: rgb(39, 143, 74);
+}
+
