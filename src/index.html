@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<title>Chord Solver</title> 
+	<link rel="stylesheet" href="styles/styles.css">
+	<!-- Materialize Link-->
+	<!-- Google Font "Fira Sans"-->
+	<link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@500&display=swap" rel="stylesheet">
+	<script src="js/main.js"></script>
+</head>
+
+
+<body>     
+	<div class="container">
+
+		<header class="header">
+			<div class="Heading" id="head">
+				<a href="index.html"><h1 class="heading-1">Chord Solver</h1></a>
+			</div>
+			<div class="login">
+				<h1>DPS</h1>
+			</div>
+		</header>
+
+		<main class="main">
+			<form class="form">
+				<label for="search" class="label">
+					Search chord by notes
+				</label>
+				<input
+				class="input"
+				id="search"
+				type="text"
+				placeholder="Example: B D F A"
+				name="search"/>
+				<button
+				onclick = "doAnswer(); return false"
+				class="button">
+				&rarr;
+			</button>
+		</form>	
+	</main>
+
+	<div class="result">
+		<table class="tablenotes">
+			<thead>
+				<tr>
+					<th colspan="2">
+						<h1 id="answer">
+							<!-- <br>Hi! Thanks for using my program :D <br><br>
+								Check out the about section to learn more! -->
+							</h1>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><h2 class="note" id="root"></h2></td>
+						<td id="RootText" class="desc"></td>
+					</tr>
+					<tr>
+						<td><h2 class="note" id="third"></h2></td>
+						<td id="ThirdText" class="desc"></td>
+					</tr>
+					<tr>
+						<td><h2 class="note" id="fifth" ></h2></td>
+						<td id="FifthText" class="desc"></td>
+					</tr>
+					<tr>
+						<td><h2 class="note" id="seventh" ></h2></td>
+						<td id="SeventhText" class="desc"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+				
+		<footer class="footer">
+			<ul class="links">
+				
+				<li>
+					<a href="https://open.spotify.com/artist/5p3OCHNDQToL17lUks6TSj" target="_blank">
+						<svg class="icon">
+							<use xlink:href="img/sprite.svg#icon-spotify"></use>
+						</svg>
+					</a>
+				</li>
+					
+				<li>
+					<a href="https://music.apple.com/us/artist/dylan-shade/1475065308" target="_blank">
+						<svg class="icon">
+							<use xlink:href="img/sprite.svg#icon-appleinc"></use>
+						</svg>
+					</a>
+				</li>
+
+				<li>
+					<a href="https://www.instagram.com/dylanshade_" target="_blank">
+						<svg class="icon">
+							<use xlink:href="img/sprite.svg#icon-instagram"></use>
+						</svg>
+					</a>
+				</li>
+
+				<li><a href="about.html" >About</a></li>
+			</ul>
+			<div class="copy">&copy; 2020 Dylan Shade</div>
+		</footer>
+	</div>
+</body>
