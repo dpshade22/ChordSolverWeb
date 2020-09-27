@@ -6,6 +6,9 @@ function doAnswer() {
 	let d = 0;
 	
 	let personNotes = document.getElementById("search").value;
+	
+	personNotes = personNotes.trim()
+	
 	let inputList = personNotes.split(" ");
 
 	if (inputList.length >= 2) {
@@ -391,7 +394,7 @@ function doAnswer() {
 					document.getElementById("third").innerHTML = a;
 					document.getElementById("fifth").innerHTML = b;
 					document.getElementById("seventh").innerHTML = c;
-					return (d + " Half Diminished 7th (First Inverion)")}
+					return (d + " Half Diminished 7th (First Inversion)")}
 			}
 		}
 
@@ -481,7 +484,7 @@ function doAnswer() {
 					document.getElementById("third").innerHTML = c;
 					document.getElementById("fifth").innerHTML = d;
 					document.getElementById("seventh").innerHTML = a;
-					print(b + " Major Minor 7 (Third Inversion)")}
+					return (b + " Major Minor 7 (Third Inversion)")}
 			}
 		}
 
