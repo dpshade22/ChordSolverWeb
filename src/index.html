@@ -7,6 +7,15 @@
 	<!-- Materialize Link-->
 	<!-- Google Font "Fira Sans"-->
 	<link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@500&display=swap" rel="stylesheet">
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-179094170-1"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	
+	gtag('config', 'UA-179094170-1');
+	</script>
 	<script src="js/main.js"></script>
 </head>
 
@@ -33,7 +42,10 @@
 				id="search"
 				type="text"
 				placeholder="Example: B D F A"
-				name="search"/>
+				name="search"
+				oninput="doAnswer(); return false"
+				autocomplete="off"
+				/>
 				<button
 				onclick = "doAnswer(); return false"
 				class="button">

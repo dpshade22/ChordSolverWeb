@@ -4,12 +4,21 @@ function doAnswer() {
 	let b = 0;
 	let c = 0;
 	let d = 0;
-	
+	let inputList = [];
 	let personNotes = document.getElementById("search").value;
 	
 	personNotes = personNotes.trim()
-	
-	let inputList = personNotes.split(" ");
+
+	if (personNotes.includes('b') || personNotes.includes('#')) {
+		inputList = personNotes.split(" ");
+	}
+
+
+	else {
+		personNotes = personNotes.replaceAll(" ", "");
+		inputList = personNotes.split("")
+		console.log(inputList)
+	}
 
 	if (inputList.length >= 2) {
 		let aFront = inputList[0].charAt(0);
@@ -314,13 +323,13 @@ function doAnswer() {
 					document.getElementById("third").innerHTML = b;
 					document.getElementById("fifth").innerHTML = c;
 					document.getElementById("seventh").innerHTML = d;
-					return (a + " Major Minor 7")}	
+					return (a + " Major Minor 7th")}	
 				if (Identify_Interval(c, d) === "M3"){
 					document.getElementById("root").innerHTML = a;
 					document.getElementById("third").innerHTML = b;
 					document.getElementById("fifth").innerHTML = c;
 					document.getElementById("seventh").innerHTML = d;
-					return (a + " Major 7")	}
+					return (a + " Major 7th")	}
 				if (Identify_Interval(c, d) === "M2"){
 					document.getElementById("root").innerHTML = d;
 					document.getElementById("third").innerHTML = a;
@@ -412,7 +421,7 @@ function doAnswer() {
 					document.getElementById("third").innerHTML = b;
 					document.getElementById("fifth").innerHTML = c;
 					document.getElementById("seventh").innerHTML = d;
-					return (a + " Fully Diminished 7")}
+					return (a + " Fully Diminished 7th")}
 				if (Identify_Interval(c, d) === "Augmented 2nd"){
 					document.getElementById("root").innerHTML = d;
 					document.getElementById("third").innerHTML = a;
@@ -484,7 +493,7 @@ function doAnswer() {
 					document.getElementById("third").innerHTML = c;
 					document.getElementById("fifth").innerHTML = d;
 					document.getElementById("seventh").innerHTML = a;
-					return (b + " Major Minor 7 (Third Inversion)")}
+					return (b + " Major Minor 7th (Third Inversion)")}
 			}
 		}
 
@@ -664,6 +673,7 @@ function doAnswer() {
 	};
 
 	function initializeChord(){
+		document.getElementById("answer").innerHTML = "";
 		document.getElementById("root").innerHTML = "";
 		document.getElementById("RootText").innerHTML = "";
 		document.getElementById("third").innerHTML = "";
@@ -679,14 +689,15 @@ function doAnswer() {
 		switch(inputList.length) {
 			case 1:				
 					initializeChord();	
-					document.getElementById("answer").innerHTML = "Please enter more than one note!";			
+					document.getElementById("answer").innerHTML = "Please enter more than one note!";
+					return 1			
 			case 2:
 				initializeChord();
 				let intAns = convertToName();
 		
 				if (intAns === undefined) {
 					initializeChord();
-					document.getElementById("answer").innerHTML = "This chord doesn't spell a valid interval!";
+					document.getElementById("answer").innerHTML = "Please try a different chord or check spacing";
 				}
 				else {
 				document.getElementById("answer").innerHTML = intAns;
@@ -702,7 +713,7 @@ function doAnswer() {
 				
 				if (triadAns === undefined) {
 					initializeChord();	
-					document.getElementById("answer").innerHTML = "This chord doesn't spell a valid triad!";
+					document.getElementById("answer").innerHTML = "Please try a different chord or check spacing";
 				}
 				else {
 					document.getElementById("answer").innerHTML = triadAns;
@@ -720,7 +731,7 @@ function doAnswer() {
 
 				if (sevAns === undefined) {
 					initializeChord();
-					document.getElementById("answer").innerHTML = "This chord doesn't spell  a valid seventh chord!";
+					document.getElementById("answer").innerHTML = "Please try a different chord or check spacing";
 				}
 				
 				else {
@@ -729,10 +740,12 @@ function doAnswer() {
 				break;
 			default:
 				document.getElementById("answer").innerHTML = "Please try a different chord";
+				return 1
 		}
 	}
-	if (printAns() === 0) {
-		return "Please enter more than one note!";
+	
+	if (printAns() === 1) {
+		document.getElementById("answer").innerHTML = "Enter a chord or interval";
 	}
 	else {
 		printAns();

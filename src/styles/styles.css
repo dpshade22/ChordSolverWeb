@@ -5,7 +5,7 @@
 }
 
 body {
-    background-image: url( http://api.thumbr.it/whitenoise-361x370.png?background=e6e5ddff&noise=626262&density=2&opacity=15);
+    background-color: #e6e5ddff;
     font-family: 'Anton', sans-serif;
     font-family: 'Fira Sans Condensed', sans-serif;
     height: 100vh;
@@ -203,7 +203,8 @@ h1{
     align-items: center;
     background-color: rgb(81, 165, 165);
     padding: 0;
-    height: 8rem;
+    height: 6rem;
+    margin-top: 0.8rem;
 }
 
 .links {
