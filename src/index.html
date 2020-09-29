@@ -7,7 +7,9 @@
 	<!-- Materialize Link-->
 	<!-- Google Font "Fira Sans"-->
 	<link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@500&display=swap" rel="stylesheet">
-	<script src="js/main.js"></script>
+
+	<!-- Put "defer" in script so it will run only after all the DOM are loaded, becouse of selectors -->
+	<script src="js/main.js" type="module"></script>
 </head>
 
 
@@ -29,16 +31,16 @@
 					Search chord by notes
 				</label>
 				<input
-				class="input"
-				id="search"
-				type="text"
-				placeholder="Example: B D F A"
-				name="search"/>
+					class="input"
+					id="search"
+					type="text"
+					placeholder="Example: B D F A"
+					name="search"/>
 				<button
-				onclick = "doAnswer(); return false"
-				class="button">
-				&rarr;
-			</button>
+					id="search-button"
+					class="button">
+					&rarr;
+				</button>
 		</form>	
 	</main>
 
