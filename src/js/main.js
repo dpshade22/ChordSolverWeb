@@ -50,43 +50,61 @@ function initializeChord(){
 	return to skip the "elses" to let the code cleaner. We now are receiving args in this function to
 	uncouple from the rest of the code and turn it in a pure (independent) function
 */
-function printAns(inputList, a, b, c, d)  {
+function printAns(noteArray)  {
+	
+	const [a, b, c, d] = noteArray;
+	let noteOrder;
+	let rootNote;
+
 	initializeChord();	
 
-	switch(inputList.length) {
+
+	switch(noteArray.length) {
 		case 1:				
 			return answerText.innerHTML = "Please enter more than one note!";	
 
 		case 2:
-			let intAns = convertToName(a, b);
+			const intervalAns = convertToName(a, b);
 	
-			if (intAns) {
-				return answerText.innerHTML = intAns;
+			if (intervalAns) {
+				return answerText.innerHTML = intervalAns;
 			}
 			return answerText.innerHTML = "This chord doesn't spell a valid interval!";
 
 		case 3:
-			let triadAns = identifyChord(a, b ,c);
+			const triadAnswer = identifyChord(a, b ,c);
+			noteOrder = triadAnswer.inversion === "First"
+							? [c, b, a]
+							: triadAnswer.inversion === "Second"
+							? [b, c, a]
+							: [a, b, c];
+
+			showNotesInHTML(...noteOrder);
+
+			[rootNote,] = noteOrder;
 					
-			if (triadAns) {
-				answerText.innerHTML = triadAns;
-				rootText.innerHTML = "Root";
-				thirdText.innerHTML = "Third";
-				fifthText.innerHTML = "Fifth";
-				return;
-				
+			if (triadAnswer) {
+				answerText.innerHTML = rootNote + " " + triadAnswer.name;
+				return;			
 			}
 			return answerText.innerHTML = "This chord doesn't spell a valid triad!";
 
-		case 4:
-			let sevAns = identifyChord(a, b, c, d);
+			case 4:
+			const seventhAnswer = identifyChord(a, b, c, d);
+			noteOrder = seventhAnswer.inversion === "First"
+						? [d, a, b, c]
+						: seventhAnswer.inversion === "Second"
+						? [c, d, a, b]
+						: seventhAnswer.inversion === "Third"
+						? [b, c, d, a]
+						: [a, b, c, d];
 
-			if (sevAns) {
-				answerText.innerHTML = sevAns;
-				rootText.innerHTML = "Root";
-				thirdText.innerHTML = "Third";
-				fifthText.innerHTML = "Fifth";
-				seventhText.innerHTML = "Seventh";
+			showNotesInHTML(...noteOrder);
+
+			[rootNote,] = noteOrder;
+
+			if (seventhAnswer) {
+				answerText.innerHTML = rootNote + " " + seventhAnswer.name;
 				return;	
 			}
 			return answerText.innerHTML = "This chord doesn't spell  a valid seventh chord!";
@@ -96,58 +114,30 @@ function printAns(inputList, a, b, c, d)  {
 	}
 }
 
+/*
+	Refactoring for simplicity, I will try to eliminate this function in the future
+*/
 function convertToName(a, b) {
-	let intAns;
-	if (Identify_Interval(a,b) === "m2"){
-		intAns = "Minor 2nd";
-		return intAns;
+	const interval = identifyInterval(a,b);
+
+	switch(interval) {
+		case "m2": return "Minor 2nd";
+		case "M2": return "Major 2nd";
+		case "m3": return "Minor 3rd";
+		case "M3": return "Major 3rd";
+		case "P4": return "Perfect 4th";
+		case "P5": return "Perfect 5th";
+		case "m6": return "Minor 6th";
+		case "M6": return "Major 6th";
+		case "m7": return "Minor 7th";
+		case "M7": return "Major 7th";
+		default: return interval;
 	}
-	else if (Identify_Interval(a,b) === "M2"){
-		intAns = "Major 2nd";
-		return intAns;
-	}
-	
-	else if (Identify_Interval(a,b) === "m3"){
-		intAns = "Minor 3rd"
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "M3"){
-		intAns = "Major 3rd"
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "P4"){
-		intAns = "Perfect 4th";
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "P5"){
-		intAns = "Perfect 5th";
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "m6"){
-		intAns = "Minor 6th";
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "M6"){
-		intAns = "Major 6th";
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "m7"){
-		intAns = "Minor 7th";
-		return intAns;
-	}
-	else if (Identify_Interval(a,b) === "M7"){
-		intAns = "Major 7th";
-		return intAns;
-	}
-	
-	else {
-		return Identify_Interval(a,b);
-	};
 };
 
 // if two notes function / identify interval
 
-function Identify_Interval(a, b) {
+function identifyInterval(a, b) {
 
 	// here we abstract this part of the code in an outer helper function "getDistance". In an ideal world, functions only do one thing.
 
@@ -158,24 +148,9 @@ function Identify_Interval(a, b) {
 	// }
 
 	const distance = getDistance(a, b);
-	const interval = getInterval(a, b); // this function is now called just once
+	const interval = getInterval(a, b); // this function is now called just once now
 
-	switch(distance) {
-		case 1:
-			return Resources.second.find(chord => chord.value === interval).name;
-		case 2:
-			return Resources.third.find(chord => chord.value === interval).name;
-		case 3:
-			return Resources.fourth.find(chord => chord.value === interval).name;
-		case 4:
-			return Resources.fifth.find(chord => chord.value === interval).name;
-		case 5:
-			return Resources.sixth.find(chord => chord.value === interval).name;
-		case 5:
-			return Resources.seventh.find(chord => chord.value === interval).name;
-		default:
-			return undefined; // could throw an error
-	}
+	return Resources.Intervals[distance].find(chord => chord.value === interval).name;
 
 	// all the the below code are just unused now
 
@@ -286,307 +261,241 @@ function Identify_Interval(a, b) {
 	// return Finalint;
 }
 
+function showNotesInHTML(...args) {
+	const htmlFields = [rootNote, thirdNote, fifthNote, seventhNote];
+
+	// if the chord has only 3 notes, the seventh will remain blank
+	htmlFields.forEach((field, index) => args[index]
+									? field.innerHTML = args[index]
+									: "" );
+
+	rootText.innerHTML = "Root";
+	thirdText.innerHTML = "Third";
+	fifthText.innerHTML = "Fifth";
+	seventhText.innerHTML = "Seventh";
+
+	console.log(args.length);
+
+	if (args.length < 4) {
+		seventhText.innerHTML = "";
+	}
+}
+
 /*
 	Transformed the two functions "Identify_Chord" and "Identify_Chord_Seventh" in a unique function
 	that receives a variable quantity of arguments so we can concentrate the responsability of identifying
 	chords in a unique place. Now we call "Identify_interval" only twice for 3 Input notes and a third
-	time if the input have 4 notes
+	time if the input have 4 notes.
+	
+	Separation of concerns, this function only returns an object with the name and the name and inversion
+	type, if any. Removed the chord data to its own data structure (an object) to help maintenance and
+	debugging.
 */
 function identifyChord(...args) {
 	const [a, b, c, d] = args;
 
-	const firstInterval = Identify_Interval(a, b);
-	const secondInterval = Identify_Interval(b, c);
+	const firstInterval = identifyInterval(a, b);
+	const secondInterval = identifyInterval(b, c);
 
 	switch(args.length) {
 		case 3:
+			return Resources.threeNoteChords[firstInterval][secondInterval];
 
-			if (firstInterval === "M3"){
-				if (secondInterval === "m3"){
-					rootNote.innerHTML = a;
-					thirdNote.innerHTML = b;
-					fifthNote.innerHTML = c;
-					return (a + " Major")}
-				if (secondInterval === "M3"){
-					rootNote.innerHTML = a;
-					thirdNote.innerHTML = b;
-					fifthNote.innerHTML = c;
-					return (a + " Augmented");}
-				if (secondInterval === "P4"){
-					rootNote.innerHTML = c;
-					thirdNote.innerHTML = a;
-					fifthNote.innerHTML = b;
-					return (c + " Minor (First Inversion)");}
-			}
+			// if (firstInterval === "M3"){
+			// 	if (secondInterval === "m3"){
+			// 		showNotesInHTML(a, b, c);
+			// 		return (a + " Major")}
+			// 	if (secondInterval === "M3"){
+			// 		showNotesInHTML(a, b, c);
+			// 		return (a + " Augmented");}
+			// 	if (secondInterval === "P4"){
+			// 		showNotesInHTML(c, a, b);
+			// 		return (c + " Minor (First Inversion)");}
+			// } // DONE
 				
-			if (firstInterval === "m3"){
-				if (secondInterval === "M3"){
-					rootNote.innerHTML = a;
-					thirdNote.innerHTML = b;
-					fifthNote.innerHTML = c;
-					return (a + " Minor");}
-				if (secondInterval === "m3"){
-					rootNote.innerHTML = a;
-					thirdNote.innerHTML = b;
-					fifthNote.innerHTML = c;
-					return (a + " Diminished");}
-				if (secondInterval === "P4"){
-					rootNote.innerHTML = c;
-					thirdNote.innerHTML = a;
-					fifthNote.innerHTML = b;
-					return (c + " Major (First Inversion)");}
-				if (secondInterval === "Augmented 4th"){
-					rootNote.innerHTML = c;
-					thirdNote.innerHTML = a;
-					fifthNote.innerHTML = b;
-					return (c + " Diminished (First Inversion)");}
-			}
+			// if (firstInterval === "m3"){
+			// 	if (secondInterval === "M3"){
+			// 		showNotesInHTML(a, b, c);
+			// 		return (a + " Minor");}
+			// 	if (secondInterval === "m3"){
+			// 		showNotesInHTML(a, b, c);
+			// 		return (a + " Diminished");}
+			// 	if (secondInterval === "P4"){
+			// 		showNotesInHTML(c, a, b);
+			// 		return (c + " Major (First Inversion)");}
+			// 	if (secondInterval === "Augmented 4th"){
+			// 		showNotesInHTML(c, a, b);
+			// 		return (c + " Diminished (First Inversion)");}
+			// } // DONE
 			
-			if (firstInterval === "P4"){
-				if (secondInterval === "M3"){
-					rootNote.innerHTML = b;
-					thirdNote.innerHTML = c;
-					fifthNote.innerHTML = a;
-					return (b + " Major (Second Inversion)")}		
-				if (secondInterval === "m3"){
-					rootNote.innerHTML = b;
-					thirdNote.innerHTML = c;
-					fifthNote.innerHTML = a;
-					return (b + " Minor (Second Inversion)")}
-			}
+			// if (firstInterval === "P4"){
+			// 	if (secondInterval === "M3"){
+			// 		showNotesInHTML(b, c, a);
+			// 		return (b + " Major (Second Inversion)")}		
+			// 	if (secondInterval === "m3"){
+			// 		showNotesInHTML(b, c, a);
+			// 		return (b + " Minor (Second Inversion)")}
+			// }
 		
-			if (firstInterval === "Augmented 4th"){
-				if (secondInterval === "m3"){
-					rootNote.innerHTML = b;
-					thirdNote.innerHTML = c;
-					fifthNote.innerHTML = a;
-					return (b + " Diminished (Second Inversion)");}
-			}
+			// if (firstInterval === "Augmented 4th"){
+			// 	if (secondInterval === "m3"){
+			// 		showNotesInHTML(b, c, a);
+			// 		return (b + " Diminished (Second Inversion)");
+			// 	}
+			// }
 		
-			if (firstInterval === "Diminished 4th"){
-				if (secondInterval === "M3"){
-					rootNote.innerHTML = b;
-					thirdNote.innerHTML = c;
-					fifthNote.innerHTML = a;
-					return (b + " Augmented (Second Inversion)");}
-			}
+			// if (firstInterval === "Diminished 4th"){
+			// 	if (secondInterval === "M3"){
+			// 		showNotesInHTML(b, c, a);
+			// 		return (b + " Augmented (Second Inversion)");}
+			// } // DONE
 
 		case 4:
 
-			const thirdInterval = Identify_Interval(c, d);
+			const thirdInterval = identifyInterval(c, d);
 
-			if (firstInterval === "M3"){
-				if (secondInterval === "m3"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Major Minor 7")}	
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Major 7")	}
-					if (thirdInterval === "M2"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Minor 7th (First Inversion)")}
-				}
-			}
+			return Resources.fourNoteChords[firstInterval][secondInterval][thirdInterval];
+
+		// 	if (firstInterval === "M3"){
+		// 		if (secondInterval === "m3"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Major Minor 7")}	
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Major 7")	}
+		// 			if (thirdInterval === "M2"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Minor 7th (First Inversion)")}
+		// 		}
+		// 	} // DONE
 				
-		// (M3, m2 Chords)	
-			if (firstInterval === "M3"){
-				if (secondInterval === "m2"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Minor Major 7th (Second Inversion)")}		
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Major 7th (Second Inversion)")}	
-				}
-			}
+		// // (M3, m2 Chords)	
+		// 	if (firstInterval === "M3"){
+		// 		if (secondInterval === "m2"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Minor Major 7th (Second Inversion)")}		
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Major 7th (Second Inversion)")}	
+		// 		}
+		// 	} // DONE
 		
-		// (M3, Misc. Chords)
-			if (firstInterval === "M3"){
-				if (secondInterval === "M2"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Half Diminished 7th (Second Inversion)")}
-					}
-				if (secondInterval === "M3"){
-					if (thirdInterval === "m2"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Minor Major 7th (First Inversion)")}
-					}
-			}		
+		// // (M3, Misc. Chords)
+		// 	if (firstInterval === "M3"){
+		// 		if (secondInterval === "M2"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Half Diminished 7th (Second Inversion)")}
+		// 			}
+		// 		if (secondInterval === "M3"){
+		// 			if (thirdInterval === "m2"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Minor Major 7th (First Inversion)")}
+		// 			}
+		// 	} // DONE	
 															
-		// (m3, M3 Chords)
-			if (firstInterval === "m3"){
-				if (secondInterval === "M3"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Minor 7")}
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Minor Major 7")}
-					if (thirdInterval === "m2"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Major 7th (First Inversion)")}
-					if (thirdInterval === "M2"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Half Diminished 7th (First Inversion)")}
-				}
-			}
+		// // (m3, M3 Chords)
+		// 	if (firstInterval === "m3"){
+		// 		if (secondInterval === "M3"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Minor 7")}
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Minor Major 7")}
+		// 			if (thirdInterval === "m2"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Major 7th (First Inversion)")}
+		// 			if (thirdInterval === "M2"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Half Diminished 7th (First Inversion)")}
+		// 		}
+		// 	} // DONE
 		
-		// (m3, m3 Chords)
-			if (firstInterval === "m3"){
-				if (secondInterval === "m3"){
-					if (thirdInterval === "M2"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Major Minor 7th (First Inversion)")}
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Fully Diminished 7")}
-					if (thirdInterval === "Augmented 2nd"){
-						rootNote.innerHTML = d;
-						thirdNote.innerHTML = a;
-						fifthNote.innerHTML = b;
-						seventhNote.innerHTML = c;
-						return (d + " Fully Diminished 7th (First Inversion)")}
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = a;
-						thirdNote.innerHTML = b;
-						fifthNote.innerHTML = c;
-						seventhNote.innerHTML = d;
-						return (a + " Half Diminished 7th")}
-				}
-			}			
+		// // (m3, m3 Chords)
+		// 	if (firstInterval === "m3"){
+		// 		if (secondInterval === "m3"){
+		// 			if (thirdInterval === "M2"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Major Minor 7th (First Inversion)")}
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Fully Diminished 7")}
+		// 			if (thirdInterval === "Augmented 2nd"){
+		// 				showNotesInHTML(d, a, b, c);
+		// 				return (d + " Fully Diminished 7th (First Inversion)")}
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(a, b, c, d);
+		// 				return (a + " Half Diminished 7th")}
+		// 		}
+		// 	}	 // DONE		
 		
-		// (m3, M2 Chords)
-			if (firstInterval === "m3"){
-				if (secondInterval === "M2"){
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Major Minor 7th (Second Inversion)")}
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Minor 7th (Second Inversion)")}
-				}
-			}
+		// // (m3, M2 Chords)
+		// 	if (firstInterval === "m3"){
+		// 		if (secondInterval === "M2"){
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Major Minor 7th (Second Inversion)")}
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Minor 7th (Second Inversion)")}
+		// 		}
+		// 	}	// DONE
 		
-		// (The Sole Diminished Chord)
-			if (firstInterval === "m3"){
-				if (secondInterval === "Augmented 2nd"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = c;
-						thirdNote.innerHTML = d;
-						fifthNote.innerHTML = a;
-						seventhNote.innerHTML = b;
-						return (c + " Fully Diminished 7th (Second Inversion)")}
-				}
-			}
+		// // (The Sole Diminished Chord)
+		// 	if (firstInterval === "m3"){
+		// 		if (secondInterval === "Augmented 2nd"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(c, d, a, b);
+		// 				return (c + " Fully Diminished 7th (Second Inversion)")}
+		// 		}
+		// 	} // DONE
 		
-		// (M2, m3 Chords)
-			if (firstInterval === "M2"){
-				if (secondInterval === "m3"){
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Minor 7th (Third Inversion)")}												
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Half Diminished 7th (Third Inversion)")}
-				}
-			}
+		// // (M2, m3 Chords)
+		// 	if (firstInterval === "M2"){
+		// 		if (secondInterval === "m3"){
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Minor 7th (Third Inversion)")}												
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Half Diminished 7th (Third Inversion)")}
+		// 		}
+		// 	} // DONE
 																																
-		// (M2 Chord)
-			if (firstInterval === "M2"){
-				if (secondInterval === "M3"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Major Minor 7 (Third Inversion)")}
-				}
-			}
+		// // (M2 Chord)
+		// 	if (firstInterval === "M2"){
+		// 		if (secondInterval === "M3"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Major Minor 7 (Third Inversion)")}
+		// 		}
+		// 	} // DONE
 		
-		// (m2 Chord)
-			if (firstInterval === "m2"){
-				if (secondInterval === "M3"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Major 7th (Third Inversion)")}
-				}
-				if (secondInterval === "m3"){
-					if (thirdInterval === "M3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Minor Major 7th (Third Inversion)")}
-				}
-			}										
-			if (firstInterval === "Augmented 2nd"){
-				if (secondInterval === "m3"){
-					if (thirdInterval === "m3"){
-						rootNote.innerHTML = b;
-						thirdNote.innerHTML = c;
-						fifthNote.innerHTML = d;
-						seventhNote.innerHTML = a;
-						return (b + " Fully Diminished 7th (Third Inversion)")}
-				}
-			}
+		// // (m2 Chord)
+		// 	if (firstInterval === "m2"){
+		// 		if (secondInterval === "M3"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Major 7th (Third Inversion)")}
+		// 		}
+		// 		if (secondInterval === "m3"){
+		// 			if (thirdInterval === "M3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Minor Major 7th (Third Inversion)")}
+		// 		}
+		// 	} // DONE										
+		// 	if (firstInterval === "Augmented 2nd"){
+		// 		if (secondInterval === "m3"){
+		// 			if (thirdInterval === "m3"){
+		// 				showNotesInHTML(b, c, d, a);
+		// 				return (b + " Fully Diminished 7th (Third Inversion)")}
+		// 		}
+		// 	} // DONE
 
-			break;
+		// 	break;
 
 		default:
 			throw new Error("Notes provided as arguments did not form a valid chord");
@@ -684,8 +593,6 @@ function doAnswer(e) {
 
 	if (inputList.length === 2) {
 		Sorted.push(b)
-		a = Sorted[0]
-		b = Sorted[1]
 	}
 
 	if (inputList.length === 3) { 
@@ -699,15 +606,11 @@ function doAnswer(e) {
 		if (BIndex < CIndex){
 			Sorted.push(b)
 			Sorted.push(c)
-		}
-			
+		}	
 		else {
 			Sorted.push(c)
 			Sorted.push(b)
 		}
-		a = Sorted[0]
-		b = Sorted[1]
-		c = Sorted[2]
 	}
 	if (inputList.length === 4) {
 		
@@ -756,17 +659,14 @@ function doAnswer(e) {
 				Sorted.push(b)	
 			}
 		}
-		a = Sorted[0]
-		b = Sorted[1]
-		c = Sorted[2]
-		d = Sorted[3]
 	}
+	
 
-	if (printAns(inputList, a, b, c, d) === 0) {
+	if (printAns(Sorted) === 0) {
 		return "Please enter more than one note!";
 	}
 	else {
-		printAns(inputList, a, b, c, d);
+		printAns(Sorted);
 	}
 }
 
