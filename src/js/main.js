@@ -22,6 +22,7 @@ searchBtn.addEventListener('click', doAnswer);
 // got all the functions out of the "main" function. Segregated code is easier to debug 
 
 function getDistance(a, b) {
+
 	const firstNote = Resources.baseNotes[a[0]];
 	const secondNote = Resources.baseNotes[b[0]]
 
@@ -64,26 +65,27 @@ function printAns(noteArray)  {
 			return answerText.innerHTML = "Please enter more than one note!";	
 
 		case 2:
-			const intervalAns = convertToName(a, b);
-	
-			if (intervalAns) {
-				return answerText.innerHTML = intervalAns;
+			const intervalAnswer = identifyInterval(a, b);
+
+			if (intervalAnswer) {
+				return answerText.innerHTML = a + " " + intervalAnswer;
 			}
 			return answerText.innerHTML = "This chord doesn't spell a valid interval!";
 
 		case 3:
 			const triadAnswer = identifyChord(a, b ,c);
-			noteOrder = triadAnswer.inversion === "First"
-							? [c, b, a]
-							: triadAnswer.inversion === "Second"
-							? [b, c, a]
-							: [a, b, c];
-
-			showNotesInHTML(...noteOrder);
-
-			[rootNote,] = noteOrder;
-					
+				
 			if (triadAnswer) {
+				noteOrder = triadAnswer.inversion === "First"
+				? [c, b, a]
+				: triadAnswer.inversion === "Second"
+				? [b, c, a]
+				: [a, b, c];
+
+				showNotesInHTML(...noteOrder);
+
+				[rootNote,] = noteOrder;
+
 				answerText.innerHTML = rootNote + " " + triadAnswer.name;
 				return;			
 			}
@@ -91,19 +93,20 @@ function printAns(noteArray)  {
 
 			case 4:
 			const seventhAnswer = identifyChord(a, b, c, d);
-			noteOrder = seventhAnswer.inversion === "First"
-						? [d, a, b, c]
-						: seventhAnswer.inversion === "Second"
-						? [c, d, a, b]
-						: seventhAnswer.inversion === "Third"
-						? [b, c, d, a]
-						: [a, b, c, d];
-
-			showNotesInHTML(...noteOrder);
-
-			[rootNote,] = noteOrder;
 
 			if (seventhAnswer) {
+				noteOrder = seventhAnswer.inversion === "First"
+				? [d, a, b, c]
+				: seventhAnswer.inversion === "Second"
+				? [c, d, a, b]
+				: seventhAnswer.inversion === "Third"
+				? [b, c, d, a]
+				: [a, b, c, d];
+
+				showNotesInHTML(...noteOrder);
+
+				[rootNote,] = noteOrder;
+
 				answerText.innerHTML = rootNote + " " + seventhAnswer.name;
 				return;	
 			}
@@ -115,25 +118,26 @@ function printAns(noteArray)  {
 }
 
 /*
-	Refactoring for simplicity, I will try to eliminate this function in the future
+	Refactoring for simplicity, I will try to eliminate this function in the future.
+	And now, with the Chord names in our object, this function is not needed anymore
 */
-function convertToName(a, b) {
-	const interval = identifyInterval(a,b);
+// function convertToName(a, b) {
+// 	const interval = identifyInterval(a,b);
 
-	switch(interval) {
-		case "m2": return "Minor 2nd";
-		case "M2": return "Major 2nd";
-		case "m3": return "Minor 3rd";
-		case "M3": return "Major 3rd";
-		case "P4": return "Perfect 4th";
-		case "P5": return "Perfect 5th";
-		case "m6": return "Minor 6th";
-		case "M6": return "Major 6th";
-		case "m7": return "Minor 7th";
-		case "M7": return "Major 7th";
-		default: return interval;
-	}
-};
+// 	switch(interval) {
+// 		case "m2": return "Minor 2nd";
+// 		case "M2": return "Major 2nd";
+// 		case "m3": return "Minor 3rd";
+// 		case "M3": return "Major 3rd";
+// 		case "P4": return "Perfect 4th";
+// 		case "P5": return "Perfect 5th";
+// 		case "m6": return "Minor 6th";
+// 		case "M6": return "Major 6th";
+// 		case "m7": return "Minor 7th";
+// 		case "M7": return "Major 7th";
+// 		default: return interval;
+// 	}
+// };
 
 // if two notes function / identify interval
 
@@ -150,7 +154,7 @@ function identifyInterval(a, b) {
 	const distance = getDistance(a, b);
 	const interval = getInterval(a, b); // this function is now called just once now
 
-	return Resources.Intervals[distance].find(chord => chord.value === interval).name;
+	return Resources.intervals[distance].find(chord => chord.value === interval).name;
 
 	// all the the below code are just unused now
 
@@ -273,8 +277,6 @@ function showNotesInHTML(...args) {
 	thirdText.innerHTML = "Third";
 	fifthText.innerHTML = "Fifth";
 	seventhText.innerHTML = "Seventh";
-
-	console.log(args.length);
 
 	if (args.length < 4) {
 		seventhText.innerHTML = "";
@@ -498,6 +500,7 @@ function identifyChord(...args) {
 		// 	break;
 
 		default:
+			// this is just to help in debugging
 			throw new Error("Notes provided as arguments did not form a valid chord");
 		
 	}
@@ -527,13 +530,98 @@ function getInterval(a, b) { // change name to getInterval
 	return inter < 0 ? 12 - (inter + 12) : 12 - inter;
 }
 
+// extracted all the input sort logic to this function
+function sortInput(inputArray) {
+	let [a, b, c, d] = inputArray;
+	let sortedInput = [a];
+
+	// null protection...
+	let AIndex = a ? Resources.noteArray.indexOf(a[0]) : undefined;
+	let BIndex = b ? Resources.noteArray.indexOf(b[0]) : undefined;
+	let CIndex = c ? Resources.noteArray.indexOf(c[0]) : undefined;
+	let DIndex = d ? Resources.noteArray.indexOf(d[0]) : undefined; 
+
+	// too lazy to do this part today...
+	if (inputArray.length === 2) {
+		sortedInput.push(b)
+	}
+
+	if (inputArray.length === 3) { 
+				
+		if (BIndex < AIndex){
+			BIndex += 9
+		}
+		if (CIndex < AIndex){
+			CIndex += 9
+		}
+		if (BIndex < CIndex){
+			sortedInput.push(b)
+			sortedInput.push(c)
+		}	
+		else {
+			sortedInput.push(c)
+			sortedInput.push(b)
+		}
+	}
+	if (inputArray.length === 4) {
+		
+		if (BIndex < AIndex) {
+			BIndex += 9
+		}
+
+		if (CIndex < AIndex) {
+			CIndex += 9
+		}
+
+		if (DIndex < AIndex) {
+			DIndex += 9
+		}
+		
+		if (BIndex < CIndex && BIndex < DIndex) {
+			sortedInput.push(b)
+			if (CIndex < DIndex) {
+				sortedInput.push(c)
+				sortedInput.push(d)
+			}
+			else {
+				sortedInput.push(d)
+				sortedInput.push(c)
+			}
+		}
+		if (CIndex < BIndex && CIndex < DIndex) {
+			sortedInput.push(c)
+			if (BIndex	< DIndex) {
+				sortedInput.push(b)
+				sortedInput.push(d)
+			}
+			else {
+				sortedInput.push(d)
+				sortedInput.push(b)
+			}
+		}
+		if (BIndex > DIndex && CIndex > DIndex) {
+			sortedInput.push(d)
+			if (BIndex < CIndex) {
+				sortedInput.push(b)
+				sortedInput.push(c)
+			}
+			else {
+				sortedInput.push(c)
+				sortedInput.push(b)	
+			}
+		}
+	}
+
+	return sortedInput;
+}
+
 
 function doAnswer(e) {
 	// let a = 0;
 	// let b = 0;
 	// let c = 0;
 	// let d = 0;
-	e.preventDefault();
+	e.preventDefault(); // this is to prevent the page to reload on button click
 	const userInput = document.getElementById("search").value;
 
 	// this code here uppercases the notes inputted by the user and return 4 possible notes
@@ -566,20 +654,34 @@ function doAnswer(e) {
 	// now we can simplify it with a map to run through the list and uppercase the strings. "toUpperCase" is a function that
 	// applies just to valid characters  
 
-	const inputList = userInput.split(" ").map(note => note ? note.toUpperCase() : undefined);
+	// using regular expression to get the user input
+	const regex = /([a-gA-G]){1}(#|b){0,3}/g
+
+	// matches the user entries with the regex to the dictionaryNotes (hopefully), and uppercase
+	// the first letter
+	const inputList = userInput.match(regex).map(note => {
+		if (note.length > 1) {
+			return note.substring(1).includes('b')
+				? note[0].toUpperCase() + note.substring(1)
+				: note.toUpperCase();
+
+		}
+		return note ? note.toUpperCase() : undefined;
+	});
 
 	// the notes are now separated in variables, if the input of the user is lesser than 4, the other notes will be set as "undefined"
 	// and now we have a, b, c and d = noteA, noteB, noteC and noteD
-	// const [noteA, noteB, noteC, noteD] = inputList;
-	let [a, b, c, d] = inputList;
 
-	const Sorted = [a];
+	// extracted this part to a function
+	// let [a, b, c, d] = inputList;
 
-	// null protection...
-	let AIndex = a ? Resources.noteArray.indexOf(a[0]) : undefined;
-	let BIndex = b ? Resources.noteArray.indexOf(b[0]) : undefined;
-	let CIndex = c ? Resources.noteArray.indexOf(c[0]) : undefined;
-	let DIndex = d ? Resources.noteArray.indexOf(d[0]) : undefined; 
+	// const sortedInput = [a];
+
+	// // null protection...
+	// let AIndex = a ? Resources.noteArray.indexOf(a[0]) : undefined;
+	// let BIndex = b ? Resources.noteArray.indexOf(b[0]) : undefined;
+	// let CIndex = c ? Resources.noteArray.indexOf(c[0]) : undefined;
+	// let DIndex = d ? Resources.noteArray.indexOf(d[0]) : undefined; 
 
 	// ...made this code unecessary too
 	//
@@ -591,82 +693,9 @@ function doAnswer(e) {
 	// 	let CIndex = TheNotes.indexOf(c[0])
 	// }
 
-	if (inputList.length === 2) {
-		Sorted.push(b)
-	}
+	const sortedInput = sortInput(inputList);
 
-	if (inputList.length === 3) { 
-				
-		if (BIndex < AIndex){
-			BIndex += 9
-		}
-		if (CIndex < AIndex){
-			CIndex += 9
-		}
-		if (BIndex < CIndex){
-			Sorted.push(b)
-			Sorted.push(c)
-		}	
-		else {
-			Sorted.push(c)
-			Sorted.push(b)
-		}
-	}
-	if (inputList.length === 4) {
-		
-		if (BIndex < AIndex) {
-			BIndex += 9
-		}
+	printAns(sortedInput);
 
-		if (CIndex < AIndex) {
-			CIndex += 9
-		}
-
-		if (DIndex < AIndex) {
-			DIndex += 9
-		}
-		
-		if (BIndex < CIndex && BIndex < DIndex) {
-			Sorted.push(b)
-			if (CIndex < DIndex) {
-				Sorted.push(c)
-				Sorted.push(d)
-			}
-			else {
-				Sorted.push(d)
-				Sorted.push(c)
-			}
-		}
-		if (CIndex < BIndex && CIndex < DIndex) {
-			Sorted.push(c)
-			if (BIndex	< DIndex) {
-				Sorted.push(b)
-				Sorted.push(d)
-			}
-			else {
-				Sorted.push(d)
-				Sorted.push(b)
-			}
-		}
-		if (BIndex > DIndex && CIndex > DIndex) {
-			Sorted.push(d)
-			if (BIndex < CIndex) {
-				Sorted.push(b)
-				Sorted.push(c)
-			}
-			else {
-				Sorted.push(c)
-				Sorted.push(b)	
-			}
-		}
-	}
-	
-
-	if (printAns(Sorted) === 0) {
-		return "Please enter more than one note!";
-	}
-	else {
-		printAns(Sorted);
-	}
 }
 
